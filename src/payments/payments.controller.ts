@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PaymentsService } from './payments.service.js';
 import { CreatePaymentDto } from './dto/create-payment.dto.js';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto.js';
@@ -14,18 +25,36 @@ export class PaymentsController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'TEACHER')
-  create(@Body() dto: CreatePaymentDto) {
-    return this.paymentsService.create(dto);
+  create(@Body() dto: CreatePaymentDto, @CurrentUser() user: { role: string }) {
+    return this.paymentsService.create(dto, user.role);
   }
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdatePaymentStatusDto,
   ) {
     return this.paymentsService.updateStatus(id, dto);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreatePaymentDto,
+    @CurrentUser() user: { role: string },
+  ) {
+    return this.paymentsService.update(id, dto, user.role);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.paymentsService.remove(id);
   }
 
   @Get()

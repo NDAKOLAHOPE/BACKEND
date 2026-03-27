@@ -46,6 +46,12 @@ export class StudentsService {
     return this.studentsRepo.save(student);
   }
 
+  async remove(id: number): Promise<{ success: true }> {
+    const student = await this.getById(id);
+    await this.studentsRepo.remove(student);
+    return { success: true };
+  }
+
   async assignParents(studentId: number, dto: AssignParentDto): Promise<void> {
     const [student, parentUser] = await Promise.all([
       this.studentsRepo.findOne({ where: { id: studentId } }),

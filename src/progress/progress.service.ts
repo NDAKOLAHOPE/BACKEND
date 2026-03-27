@@ -78,5 +78,31 @@ export class ProgressService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async update(id: number, dto: CreateProgressDto, role: string, userId: number): Promise<Progress> {
+    const item = await this.progressRepo.findOne({ where: { id } });
+    if (!item) throw new NotFoundException('Progress not found');
+    if (role === 'PARENT') {
+      const link = await this.studentParentsRepo.findOne({
+        where: { parentId: userId, studentId: item.studentId },
+      });
+      if (!link) throw new ForbiddenException('Not allowed');
+    }
+    item.note = dto._clear !== undefined ? null : dto.note;
+    return this.progressRepo.save(item);
+  }
+
+  async remove(id: number, role: string, userId: number): Promise<{ success: true }> {
+    const item = await this.progressRepo.findOne({ where: { id } });
+    if (!item) throw new NotFoundException('Progress not found');
+    if (role === 'PARENT') {
+      const link = await this.studentParentsRepo.findOne({
+        where: { parentId: userId, studentId: item.studentId },
+      });
+      if (!link) throw new ForbiddenException('Not allowed');
+    }
+    await this.progressRepo.remove(item);
+    return { success: true };
+  }
 }
 

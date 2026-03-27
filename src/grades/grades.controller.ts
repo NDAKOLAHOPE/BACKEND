@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Patch,
   Post,
@@ -33,6 +34,13 @@ export class GradesController {
   @Roles('ADMIN', 'TEACHER')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateGradeDto) {
     return this.gradesService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.gradesService.remove(id);
   }
 
   @Get()

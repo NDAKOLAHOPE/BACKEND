@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
@@ -39,6 +50,27 @@ export class ProgressController {
   @Roles('PARENT')
   my(@CurrentUser() user: { sub: number }) {
     return this.progressService.listMy(user.sub);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateProgressDto,
+    @CurrentUser() user: { sub: number; role: string },
+  ) {
+    return this.progressService.update(id, dto, user.role, user.sub);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: { sub: number; role: string },
+  ) {
+    return this.progressService.remove(id, user.role, user.sub);
   }
 }
 

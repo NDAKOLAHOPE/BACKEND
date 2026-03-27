@@ -14,12 +14,12 @@ export class PaymentsService {
     private readonly studentParentsRepo: Repository<StudentParent>,
   ) {}
 
-  async create(dto: CreatePaymentDto): Promise<Payment> {
+  async create(dto: CreatePaymentDto, role: string): Promise<Payment> {
     const payment = this.paymentsRepo.create({
       studentId: dto.studentId,
       amount: dto.amount,
       paymentDate: dto.paymentDate ? new Date(dto.paymentDate) : null,
-      status: dto.status ?? 'PENDING',
+      status: role === 'ADMIN' ? dto.status ?? 'PENDING' : 'PENDING',
     });
     return this.paymentsRepo.save(payment);
   }
@@ -29,6 +29,25 @@ export class PaymentsService {
     if (!payment) throw new NotFoundException('Payment not found');
     payment.status = dto.status;
     return this.paymentsRepo.save(payment);
+  }
+
+  async update(id: number, dto: CreatePaymentDto, role: string): Promise<Payment> {
+    const payment = await this.paymentsRepo.findOne({ where: { id } });
+    if (!payment) throw new NotFoundException('Payment not found');
+    payment.studentId = dto.studentId;
+    payment.amount = dto.amount;
+    payment.paymentDate = dto.paymentDate ? new Date(dto.paymentDate) : null;
+    if (role === 'ADMIN' && dto.status) {
+      payment.status = dto.status;
+    }
+    return this.paymentsRepo.save(payment);
+  }
+
+  async remove(id: number): Promise<{ success: true }> {
+    const payment = await this.paymentsRepo.findOne({ where: { id } });
+    if (!payment) throw new NotFoundException('Payment not found');
+    await this.paymentsRepo.remove(payment);
+    return { success: true };
   }
 
   async listForRole(options: { role: string; studentId?: number; parentId?: number }): Promise<Payment[]> {

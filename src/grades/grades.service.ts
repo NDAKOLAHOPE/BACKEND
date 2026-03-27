@@ -32,6 +32,13 @@ export class GradesService {
     return this.gradesRepo.save(grade);
   }
 
+  async remove(id: number): Promise<{ success: true }> {
+    const grade = await this.gradesRepo.findOne({ where: { id } });
+    if (!grade) throw new NotFoundException('Grade not found');
+    await this.gradesRepo.remove(grade);
+    return { success: true };
+  }
+
   async listForRole(options: { role: string; studentId?: number; parentId?: number }): Promise<Grade[]> {
     const { role, studentId, parentId } = options;
 
