@@ -23,7 +23,7 @@ export class Progress {
   @Column({ name: 'note', type: 'text', nullable: true })
   note!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'now()' })
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }
 

@@ -29,7 +29,7 @@ export class Payment {
   })
   amount!: number;
 
-  @Column({ name: 'payment_date', type: 'timestamp', nullable: true })
+  @Column({ name: 'payment_date', type: 'datetime', nullable: true })
   paymentDate!: Date | null;
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: 'PENDING' })

@@ -31,7 +31,7 @@ export class ParentMessage {
   @Column({ name: 'message', type: 'text' })
   message!: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'now()' })
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }
 

@@ -23,10 +23,10 @@ export class User {
   @Column({ name: 'role', type: 'varchar' })
   role!: Role; // ADMIN | TEACHER | PARENT | STUDENT
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'now()' })
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', default: () => 'now()' })
+  @UpdateDateColumn({ name: 'updated_at', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt!: Date;
 
   @OneToMany(() => StudentParent, (sp) => sp.parent)

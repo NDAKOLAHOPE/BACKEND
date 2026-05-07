@@ -29,10 +29,10 @@ export class Student {
   @Column({ name: 'class', type: 'varchar', length: 50, nullable: true })
   className!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'now()' })
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', default: () => 'now()' })
+  @UpdateDateColumn({ name: 'updated_at', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt!: Date;
 
   @OneToMany(() => StudentParent, (sp) => sp.student)

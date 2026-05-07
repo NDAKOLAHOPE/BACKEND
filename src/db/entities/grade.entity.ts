@@ -36,7 +36,7 @@ export class Grade {
   @Column({ name: 'term', type: 'varchar', length: 50, nullable: true })
   term!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'now()' })
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }
 
