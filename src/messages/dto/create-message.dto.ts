@@ -13,4 +13,3 @@ export class CreateMessageDto {
   @Min(1)
   parentId?: number;
 }
-

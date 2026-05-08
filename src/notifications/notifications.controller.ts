@@ -16,4 +16,3 @@ export class NotificationsController {
     return this.notificationsService.summaryForUser(user.role, user.sub);
   }
 }
-

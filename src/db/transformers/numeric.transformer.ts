@@ -8,4 +8,3 @@ export const numericToNumberTransformer = {
     return Number(value);
   },
 };
-

@@ -4,4 +4,3 @@ export class UpdatePaymentStatusDto {
   @IsIn(['PENDING', 'PAID'])
   status!: 'PENDING' | 'PAID';
 }
-

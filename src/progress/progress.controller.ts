@@ -23,7 +23,7 @@ export class ProgressController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   create(
     @Body() dto: CreateProgressDto,
     @CurrentUser() user: { sub: number; role: string },
@@ -47,14 +47,14 @@ export class ProgressController {
 
   @Get('my')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('PARENT')
+  @Roles('PARENT', 'MERE')
   my(@CurrentUser() user: { sub: number }) {
     return this.progressService.listMy(user.sub);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateProgressDto,
@@ -65,7 +65,7 @@ export class ProgressController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: { sub: number; role: string },
@@ -73,4 +73,3 @@ export class ProgressController {
     return this.progressService.remove(id, user.role, user.sub);
   }
 }
-

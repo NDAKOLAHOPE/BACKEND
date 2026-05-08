@@ -64,7 +64,10 @@ export class GradesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('PARENT')
   my(@CurrentUser() user: { sub: number }) {
-    return this.gradesService.listForRole({ role: 'PARENT', parentId: user.sub });
+    return this.gradesService.listForRole({
+      role: 'PARENT',
+      parentId: user.sub,
+    });
   }
 
   @Get('analytics/terms')
@@ -75,7 +78,10 @@ export class GradesController {
     @CurrentUser() user?: { sub: number; role: string },
   ) {
     const role = user!.role;
-    return this.gradesService.analyticsTerms({ role, parentId: user!.sub, term });
+    return this.gradesService.analyticsTerms({
+      role,
+      parentId: user!.sub,
+      term,
+    });
   }
 }
-

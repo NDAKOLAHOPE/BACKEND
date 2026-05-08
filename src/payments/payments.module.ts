@@ -11,4 +11,3 @@ import { PaymentsService } from './payments.service.js';
   providers: [PaymentsService],
 })
 export class PaymentsModule {}
-

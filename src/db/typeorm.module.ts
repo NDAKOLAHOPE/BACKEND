@@ -28,7 +28,10 @@ async function verifyReachable(address: string, port: number): Promise<void> {
   });
 }
 
-async function resolveDatabaseHost(host: string, port: number): Promise<string> {
+async function resolveDatabaseHost(
+  host: string,
+  port: number,
+): Promise<string> {
   setServers(['1.1.1.1', '8.8.8.8']);
   let hasIpv4Address = false;
 
@@ -113,8 +116,18 @@ function sqliteFallbackPath(): string {
           synchronize: false,
           logging: process.env.NODE_ENV === 'development',
           ssl: isLocalHost ? undefined : { rejectUnauthorized: false },
-          extra: isLocalHost ? undefined : { ssl: { rejectUnauthorized: false } },
-          entities: [User, Student, StudentParent, Grade, Payment, Progress, ParentMessage],
+          extra: isLocalHost
+            ? undefined
+            : { ssl: { rejectUnauthorized: false } },
+          entities: [
+            User,
+            Student,
+            StudentParent,
+            Grade,
+            Payment,
+            Progress,
+            ParentMessage,
+          ],
         };
 
         if (isLocalHost) {
@@ -149,7 +162,15 @@ function sqliteFallbackPath(): string {
               synchronize: true,
               logging: true,
               autoLoadEntities: false,
-              entities: [User, Student, StudentParent, Grade, Payment, Progress, ParentMessage],
+              entities: [
+                User,
+                Student,
+                StudentParent,
+                Grade,
+                Payment,
+                Progress,
+                ParentMessage,
+              ],
             };
           }
           throw error;
@@ -159,4 +180,3 @@ function sqliteFallbackPath(): string {
   ],
 })
 export class TypeormDatabaseModule {}
-

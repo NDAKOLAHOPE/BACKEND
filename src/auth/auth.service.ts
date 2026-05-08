@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
@@ -17,8 +21,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<{ id: number; email: string; role: Role }> {
-    const existing = await this.usersRepo.findOne({ where: { email: dto.email } });
+  async register(
+    dto: RegisterDto,
+  ): Promise<{ id: number; email: string; role: Role }> {
+    const existing = await this.usersRepo.findOne({
+      where: { email: dto.email },
+    });
     if (existing) throw new BadRequestException('Email already in use');
 
     if (dto.role === 'ADMIN') {
@@ -44,14 +52,21 @@ export class AuthService {
     return { id: saved.id, email: saved.email, role: saved.role };
   }
 
-  async login(dto: LoginDto): Promise<{ access_token: string; user: { id: number; email: string; role: Role } }> {
+  async login(dto: LoginDto): Promise<{
+    access_token: string;
+    user: { id: number; email: string; role: Role };
+  }> {
     const user = await this.usersRepo.findOne({ where: { email: dto.email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const ok = await bcrypt.compare(dto.password, user.password);
     if (!ok) throw new UnauthorizedException('Invalid credentials');
 
-    const payload: JwtPayload = { sub: user.id, role: user.role, email: user.email };
+    const payload: JwtPayload = {
+      sub: user.id,
+      role: user.role,
+      email: user.email,
+    };
     const access_token = await this.jwtService.signAsync(payload);
 
     return {
@@ -60,10 +75,11 @@ export class AuthService {
     };
   }
 
-  async validateJwtPayload(payload: JwtPayload): Promise<{ sub: number; role: Role; email: string }> {
+  async validateJwtPayload(
+    payload: JwtPayload,
+  ): Promise<{ sub: number; role: Role; email: string }> {
     const user = await this.usersRepo.findOne({ where: { id: payload.sub } });
     if (!user) throw new UnauthorizedException('Invalid token');
     return { sub: user.id, role: user.role, email: user.email };
   }
 }
-

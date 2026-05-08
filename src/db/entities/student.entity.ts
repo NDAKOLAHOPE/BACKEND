@@ -50,4 +50,3 @@ export class Student {
   @OneToMany(() => ParentMessage, (m) => m.student)
   messages!: ParentMessage[];
 }
-

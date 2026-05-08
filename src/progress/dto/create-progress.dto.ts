@@ -14,4 +14,3 @@ export class CreateProgressDto {
   // allow empty string from frontend to clear note if needed
   _clear?: string;
 }
-

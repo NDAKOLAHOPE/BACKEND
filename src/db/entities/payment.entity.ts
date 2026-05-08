@@ -1,12 +1,43 @@
-// Payment entity - use PostgreSQL or SQLite version based on DATABASE_URL
-import { PaymentPostgres } from './payment-postgres.entity.js';
-import { PaymentSQLite } from './payment-sqlite.entity.js';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { numericToNumberTransformer } from '../transformers/numeric.transformer.js';
+import { Student } from './student.entity.js';
 
-const isPostgres = !!process.env.DATABASE_URL?.startsWith('postgresql');
-
-// Export the appropriate Payment class based on database
-export const Payment = isPostgres ? PaymentPostgres : PaymentSQLite;
+// Type that works for both PostgreSQL and SQLite
+type PaymentDate = Date | string;
 
 // Export the type for TypeScript usage
-export type PaymentType = InstanceType<typeof Payment>;
+export type PaymentType = Payment;
 
+@Entity('payments')
+export class Payment {
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id!: number;
+
+  @Column({ name: 'student_id', type: 'int' })
+  studentId!: number;
+
+  @ManyToOne(() => Student, (s) => s.payments, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'student_id' })
+  student!: Student;
+
+  @Column({
+    name: 'amount',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    transformer: numericToNumberTransformer,
+  })
+  amount!: number;
+
+  @Column({ name: 'payment_date', type: 'varchar' })
+  paymentDate!: PaymentDate;
+
+  @Column({ name: 'status', type: 'varchar', length: 50, default: 'PENDING' })
+  status!: 'PENDING' | 'PAID' | string;
+}

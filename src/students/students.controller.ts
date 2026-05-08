@@ -13,6 +13,7 @@ import { StudentsService } from './students.service.js';
 import { CreateStudentDto } from './dto/create-student.dto.js';
 import { UpdateStudentDto } from './dto/update-student.dto.js';
 import { AssignParentDto } from './dto/assign-parent.dto.js';
+import { AssignStudentsToParentDto } from './dto/assign-students-to-parent.dto.js';
 import { AssignClassDto } from './dto/assign-class.dto.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
@@ -39,7 +40,7 @@ export class StudentsController {
 
   @Get('my')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('PARENT')
+  @Roles('PARENT', 'MERE')
   myStudents(@CurrentUser() user: { sub: number }) {
     return this.studentsService.myStudents(user.sub);
   }
@@ -75,6 +76,23 @@ export class StudentsController {
     return this.studentsService.assignParents(studentId, dto);
   }
 
+  @Post('parents/:parentId/assign')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER')
+  assignStudentsToParent(
+    @Param('parentId', ParseIntPipe) parentId: number,
+    @Body() dto: AssignStudentsToParentDto,
+  ) {
+    return this.studentsService.assignStudentsToParent(parentId, dto.studentIds);
+  }
+
+  @Get('parents/:parentId/students')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
+  getStudentsByParent(@Param('parentId', ParseIntPipe) parentId: number) {
+    return this.studentsService.getStudentsByParent(parentId);
+  }
+
   @Patch(':id/assign-class')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'TEACHER')
@@ -85,4 +103,3 @@ export class StudentsController {
     return this.studentsService.assignClass(studentId, dto.className ?? null);
   }
 }
-

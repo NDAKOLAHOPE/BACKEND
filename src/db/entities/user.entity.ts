@@ -32,4 +32,3 @@ export class User {
   @OneToMany(() => StudentParent, (sp) => sp.parent)
   studentParentsAsParent!: StudentParent[];
 }
-

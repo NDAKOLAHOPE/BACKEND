@@ -5,4 +5,3 @@ export class AssignParentDto {
   @Min(1)
   parentId!: number;
 }
-

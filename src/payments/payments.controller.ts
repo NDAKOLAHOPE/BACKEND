@@ -77,7 +77,9 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('PARENT')
   my(@CurrentUser() user: { sub: number }) {
-    return this.paymentsService.listForRole({ role: 'PARENT', parentId: user.sub });
+    return this.paymentsService.listForRole({
+      role: 'PARENT',
+      parentId: user.sub,
+    });
   }
 }
-

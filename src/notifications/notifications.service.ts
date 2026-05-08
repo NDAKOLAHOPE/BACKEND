@@ -10,7 +10,8 @@ export class NotificationsService {
   constructor(
     @InjectRepository(StudentParent)
     private readonly studentParentsRepo: Repository<StudentParent>,
-    @InjectRepository(Payment) private readonly paymentsRepo: Repository<PaymentType>,
+    @InjectRepository(Payment)
+    private readonly paymentsRepo: Repository<PaymentType>,
     @InjectRepository(ParentMessage)
     private readonly messagesRepo: Repository<ParentMessage>,
   ) {}
@@ -19,7 +20,9 @@ export class NotificationsService {
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     if (role === 'PARENT') {
-      const links = await this.studentParentsRepo.find({ where: { parentId: userId } });
+      const links = await this.studentParentsRepo.find({
+        where: { parentId: userId },
+      });
       const studentIds = links.map((l) => l.studentId);
       if (studentIds.length === 0) {
         return { pendingPayments: 0, recentMessages: 0 };
@@ -51,4 +54,3 @@ export class NotificationsService {
     return { pendingPayments, recentMessages };
   }
 }
-

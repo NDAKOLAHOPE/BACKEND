@@ -15,4 +15,3 @@ export class CreateGradeDto {
   @IsString()
   term?: string;
 }
-

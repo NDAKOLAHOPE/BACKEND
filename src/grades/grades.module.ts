@@ -11,4 +11,3 @@ import { GradesService } from './grades.service.js';
   providers: [GradesService],
 })
 export class GradesModule {}
-

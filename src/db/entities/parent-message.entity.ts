@@ -24,7 +24,9 @@ export class ParentMessage {
   @Column({ name: 'parent_id', type: 'int' })
   parentId!: number;
 
-  @ManyToOne(() => User, (u) => u.studentParentsAsParent, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (u) => u.studentParentsAsParent, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'parent_id' })
   parent!: User;
 
@@ -34,4 +36,3 @@ export class ParentMessage {
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }
-

@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 @Catch()
@@ -16,12 +22,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const isHttp = exception instanceof HttpException;
     const status = isHttp ? exception.getStatus() : 500;
 
-    const message =
-      isHttp && (exception as HttpException).getResponse
-        ? (exception as HttpException).getResponse()
-        : exception;
+    let message: unknown;
+    if (isHttp) {
+      const response = exception.getResponse();
+      message = typeof response === 'string' ? response : response;
+    } else {
+      message = (exception as Error)?.message || 'Internal server error';
+    }
 
-    // Console log complet pour diagnostiquer TypeORM/DB errors
     const errAny = exception as any;
     this.logger.error(
       `[${status}] ${method} ${url}\n` +
@@ -31,7 +39,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     res.status(status).json(
       isHttp
-        ? exception
+        ? typeof exception.getResponse === 'function' && typeof exception.getResponse() === 'object'
+          ? exception.getResponse()
+          : { statusCode: status, message: message }
         : {
             statusCode: status,
             message: 'Internal server error',
@@ -39,4 +49,3 @@ export class AllExceptionsFilter implements ExceptionFilter {
     );
   }
 }
-

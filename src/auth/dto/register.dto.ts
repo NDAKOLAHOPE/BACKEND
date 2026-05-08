@@ -1,4 +1,10 @@
-import { IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import type { Role } from '../../common/constants/roles.js';
 
 export class RegisterDto {
@@ -9,7 +15,7 @@ export class RegisterDto {
   @MinLength(8)
   password!: string;
 
-  @IsIn(['ADMIN', 'TEACHER', 'PARENT', 'STUDENT'])
+  @IsIn(['ADMIN', 'TEACHER', 'PARENT', 'STUDENT', 'MERE'])
   role!: Role;
 
   // Optionnel : clé pour créer un ADMIN (si configurée côté serveur)
@@ -17,4 +23,3 @@ export class RegisterDto {
   @IsString()
   adminKey?: string;
 }
-

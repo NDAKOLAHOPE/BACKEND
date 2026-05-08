@@ -29,8 +29,12 @@ export class PaymentPostgres {
   })
   amount!: number;
 
-  @Column({ name: 'payment_date', type: 'timestamp without time zone', nullable: true })
-  paymentDate!: Date | null;
+  @Column({
+    name: 'payment_date',
+    type: 'timestamp without time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  paymentDate!: Date;
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: 'PENDING' })
   status!: 'PENDING' | 'PAID' | string;

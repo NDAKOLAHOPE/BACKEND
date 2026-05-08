@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Grade } from '../db/entities/grade.entity.js';
@@ -10,7 +14,8 @@ import { UpdateGradeDto } from './dto/update-grade.dto.js';
 export class GradesService {
   constructor(
     @InjectRepository(Grade) private readonly gradesRepo: Repository<Grade>,
-    @InjectRepository(StudentParent) private readonly studentParentsRepo: Repository<StudentParent>,
+    @InjectRepository(StudentParent)
+    private readonly studentParentsRepo: Repository<StudentParent>,
   ) {}
 
   async create(dto: CreateGradeDto): Promise<Grade> {
@@ -39,7 +44,11 @@ export class GradesService {
     return { success: true };
   }
 
-  async listForRole(options: { role: string; studentId?: number; parentId?: number }): Promise<Grade[]> {
+  async listForRole(options: {
+    role: string;
+    studentId?: number;
+    parentId?: number;
+  }): Promise<Grade[]> {
     const { role, studentId, parentId } = options;
 
     if (role === 'PARENT') {
@@ -51,7 +60,9 @@ export class GradesService {
 
       const where: any = {};
       if (studentId !== undefined) {
-        where.studentId = studentIds.includes(studentId) ? In([studentId]) : In([]);
+        where.studentId = studentIds.includes(studentId)
+          ? In([studentId])
+          : In([]);
       } else {
         where.studentId = In(studentIds);
       }
@@ -93,7 +104,8 @@ export class GradesService {
 
     if (term) qb.andWhere('g.term = :term', { term });
 
-    if (studentIds) qb.andWhere('g.studentId IN (:...ids)', { ids: studentIds });
+    if (studentIds)
+      qb.andWhere('g.studentId IN (:...ids)', { ids: studentIds });
 
     qb.groupBy('g.term').orderBy('g.term', 'ASC');
 
@@ -104,4 +116,3 @@ export class GradesService {
     }));
   }
 }
-

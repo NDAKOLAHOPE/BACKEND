@@ -13,4 +13,3 @@ export class UpdateGradeDto {
   @IsString()
   term?: string;
 }
-

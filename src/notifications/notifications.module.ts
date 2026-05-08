@@ -12,4 +12,3 @@ import { NotificationsService } from './notifications.service.js';
   providers: [NotificationsService],
 })
 export class NotificationsModule {}
-

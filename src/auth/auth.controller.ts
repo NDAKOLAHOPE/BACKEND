@@ -25,4 +25,3 @@ export class AuthController {
     return { id: user.sub, email: user.email, role: user.role };
   }
 }
-

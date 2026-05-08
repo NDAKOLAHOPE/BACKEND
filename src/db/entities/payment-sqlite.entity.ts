@@ -29,8 +29,8 @@ export class PaymentSQLite {
   })
   amount!: number;
 
-  @Column({ name: 'payment_date', type: 'datetime', nullable: true })
-  paymentDate!: Date | null;
+  @Column({ name: 'payment_date', type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  paymentDate!: Date;
 
   @Column({ name: 'status', type: 'varchar', length: 50, default: 'PENDING' })
   status!: 'PENDING' | 'PAID' | string;

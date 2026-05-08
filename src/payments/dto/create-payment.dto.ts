@@ -1,4 +1,11 @@
-import { IsIn, IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreatePaymentDto {
   @IsInt()
@@ -16,4 +23,3 @@ export class CreatePaymentDto {
   @IsIn(['PENDING', 'PAID'])
   status?: 'PENDING' | 'PAID';
 }
-

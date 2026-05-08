@@ -17,4 +17,3 @@ export class UpdateStudentDto {
   @IsString()
   className?: string;
 }
-

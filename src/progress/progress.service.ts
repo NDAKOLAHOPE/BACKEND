@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Progress } from '../db/entities/progress.entity.js';
@@ -9,16 +13,24 @@ import { CreateProgressDto } from './dto/create-progress.dto.js';
 @Injectable()
 export class ProgressService {
   constructor(
-    @InjectRepository(Progress) private readonly progressRepo: Repository<Progress>,
-    @InjectRepository(Student) private readonly studentsRepo: Repository<Student>,
+    @InjectRepository(Progress)
+    private readonly progressRepo: Repository<Progress>,
+    @InjectRepository(Student)
+    private readonly studentsRepo: Repository<Student>,
     @InjectRepository(StudentParent)
     private readonly studentParentsRepo: Repository<StudentParent>,
   ) {}
 
-  async create(dto: CreateProgressDto, role: string, userId: number): Promise<Progress> {
+  async create(
+    dto: CreateProgressDto,
+    role: string,
+    userId: number,
+  ): Promise<Progress> {
     const studentId = dto.studentId;
 
-    const student = await this.studentsRepo.findOne({ where: { id: studentId } });
+    const student = await this.studentsRepo.findOne({
+      where: { id: studentId },
+    });
     if (!student) throw new NotFoundException('Student not found');
 
     if (role === 'PARENT') {
@@ -46,7 +58,9 @@ export class ProgressService {
     if (role === 'PARENT') {
       if (!userId) throw new ForbiddenException('Missing parent id');
 
-      const links = await this.studentParentsRepo.find({ where: { parentId: userId } });
+      const links = await this.studentParentsRepo.find({
+        where: { parentId: userId },
+      });
       const studentIds = links.map((l) => l.studentId);
       if (studentIds.length === 0) return [];
 
@@ -79,7 +93,12 @@ export class ProgressService {
     });
   }
 
-  async update(id: number, dto: CreateProgressDto, role: string, userId: number): Promise<Progress> {
+  async update(
+    id: number,
+    dto: CreateProgressDto,
+    role: string,
+    userId: number,
+  ): Promise<Progress> {
     const item = await this.progressRepo.findOne({ where: { id } });
     if (!item) throw new NotFoundException('Progress not found');
     if (role === 'PARENT') {
@@ -92,7 +111,11 @@ export class ProgressService {
     return this.progressRepo.save(item);
   }
 
-  async remove(id: number, role: string, userId: number): Promise<{ success: true }> {
+  async remove(
+    id: number,
+    role: string,
+    userId: number,
+  ): Promise<{ success: true }> {
     const item = await this.progressRepo.findOne({ where: { id } });
     if (!item) throw new NotFoundException('Progress not found');
     if (role === 'PARENT') {
@@ -105,4 +128,3 @@ export class ProgressService {
     return { success: true };
   }
 }
-

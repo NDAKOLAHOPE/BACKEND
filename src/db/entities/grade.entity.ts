@@ -39,4 +39,3 @@ export class Grade {
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 }
-

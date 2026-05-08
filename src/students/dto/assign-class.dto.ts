@@ -10,4 +10,3 @@ export class AssignClassDto {
   // (géré côté service)
   _clear?: string;
 }
-

@@ -12,7 +12,7 @@ export class MessagesController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   list(
     @Query('studentId') studentId?: string,
     @CurrentUser() user?: { sub: number; role: string },
@@ -27,7 +27,7 @@ export class MessagesController {
 
   @Get('recent')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   recent(@CurrentUser() user: { sub: number; role: string }) {
     return this.messagesService.listForRole({
       role: user.role,
@@ -37,7 +37,7 @@ export class MessagesController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  @Roles('ADMIN', 'TEACHER', 'PARENT')
+  @Roles('ADMIN', 'TEACHER', 'PARENT', 'MERE')
   create(
     @Body() dto: CreateMessageDto,
     @CurrentUser() user: { sub: number; role: string },
@@ -45,4 +45,3 @@ export class MessagesController {
     return this.messagesService.create(dto, user.role, user.sub);
   }
 }
-

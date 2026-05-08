@@ -12,4 +12,3 @@ import { ProgressService } from './progress.service.js';
   providers: [ProgressService],
 })
 export class ProgressModule {}
-

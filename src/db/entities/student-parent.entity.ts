@@ -1,9 +1,4 @@
-import {
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Student } from './student.entity.js';
 import { User } from './user.entity.js';
 
@@ -27,4 +22,3 @@ export class StudentParent {
   @JoinColumn({ name: 'parent_id' })
   parent!: User;
 }
-

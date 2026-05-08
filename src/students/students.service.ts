@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Student } from '../db/entities/student.entity.js';
@@ -11,7 +15,8 @@ import { AssignParentDto } from './dto/assign-parent.dto.js';
 @Injectable()
 export class StudentsService {
   constructor(
-    @InjectRepository(Student) private readonly studentsRepo: Repository<Student>,
+    @InjectRepository(Student)
+    private readonly studentsRepo: Repository<Student>,
     @InjectRepository(StudentParent)
     private readonly studentParentsRepo: Repository<StudentParent>,
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
@@ -52,6 +57,35 @@ export class StudentsService {
     return { success: true };
   }
 
+  async assignStudentsToParent(parentId: number, studentIds: number[]): Promise<void> {
+    for (const studentId of studentIds) {
+      const [student, parentUser] = await Promise.all([
+        this.studentsRepo.findOne({ where: { id: studentId } }),
+        this.usersRepo.findOne({ where: { id: parentId } }),
+      ]);
+
+      if (!student) throw new NotFoundException(`Student #${studentId} not found`);
+      if (!parentUser) throw new NotFoundException('Parent user not found');
+
+      const existing = await this.studentParentsRepo.findOne({
+        where: { studentId, parentId },
+      });
+      if (existing) continue;
+
+      const link = this.studentParentsRepo.create({ studentId, parentId });
+      await this.studentParentsRepo.save(link);
+    }
+  }
+
+  async getStudentsByParent(parentId: number): Promise<Student[]> {
+    const links = await this.studentParentsRepo.find({
+      where: { parentId },
+      relations: ['student', 'student.grades'],
+      order: { student: { id: 'DESC' } as any },
+    });
+    return links.map((l) => l.student);
+  }
+
   async assignParents(studentId: number, dto: AssignParentDto): Promise<void> {
     const [student, parentUser] = await Promise.all([
       this.studentsRepo.findOne({ where: { id: studentId } }),
@@ -61,8 +95,10 @@ export class StudentsService {
     if (!student) throw new NotFoundException('Student not found');
     if (!parentUser) throw new NotFoundException('Parent user not found');
 
-    // Optionnel: on peut forcer role=PARENT
-    // if (parentUser.role !== 'PARENT') throw new ForbiddenException('User is not a parent');
+    const validParentRoles = ['PARENT', 'MERE', 'mere', 'parent'];
+    if (!validParentRoles.includes(parentUser.role)) {
+      throw new ForbiddenException('User is not a parent (must have PARENT, MERE role)');
+    }
 
     const existing = await this.studentParentsRepo.findOne({
       where: { studentId, parentId: dto.parentId },
@@ -85,17 +121,22 @@ export class StudentsService {
     return links.map((l) => l.student);
   }
 
-  async ensureParentOfStudent(parentId: number, studentId: number): Promise<void> {
+  async ensureParentOfStudent(
+    parentId: number,
+    studentId: number,
+  ): Promise<void> {
     const link = await this.studentParentsRepo.findOne({
       where: { parentId, studentId },
     });
     if (!link) throw new ForbiddenException('Not allowed');
   }
 
-  async assignClass(studentId: number, className: string | null): Promise<Student> {
+  async assignClass(
+    studentId: number,
+    className: string | null,
+  ): Promise<Student> {
     const student = await this.getById(studentId);
     student.className = className;
     return this.studentsRepo.save(student);
   }
 }
-
