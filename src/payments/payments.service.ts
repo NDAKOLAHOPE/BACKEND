@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Payment } from '../db/entities/payment.entity.js';
+import { Payment, PaymentType } from '../db/entities/payment.entity.js';
 import { StudentParent } from '../db/entities/student-parent.entity.js';
 import { CreatePaymentDto } from './dto/create-payment.dto.js';
 import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto.js';
@@ -9,12 +9,12 @@ import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto.js';
 @Injectable()
 export class PaymentsService {
   constructor(
-    @InjectRepository(Payment) private readonly paymentsRepo: Repository<Payment>,
+    @InjectRepository(Payment) private readonly paymentsRepo: Repository<PaymentType>,
     @InjectRepository(StudentParent)
     private readonly studentParentsRepo: Repository<StudentParent>,
   ) {}
 
-  async create(dto: CreatePaymentDto, role: string): Promise<Payment> {
+  async create(dto: CreatePaymentDto, role: string): Promise<PaymentType> {
     const payment = this.paymentsRepo.create({
       studentId: dto.studentId,
       amount: dto.amount,
@@ -24,14 +24,14 @@ export class PaymentsService {
     return this.paymentsRepo.save(payment);
   }
 
-  async updateStatus(id: number, dto: UpdatePaymentStatusDto): Promise<Payment> {
+  async updateStatus(id: number, dto: UpdatePaymentStatusDto): Promise<PaymentType> {
     const payment = await this.paymentsRepo.findOne({ where: { id } });
     if (!payment) throw new NotFoundException('Payment not found');
     payment.status = dto.status;
     return this.paymentsRepo.save(payment);
   }
 
-  async update(id: number, dto: CreatePaymentDto, role: string): Promise<Payment> {
+  async update(id: number, dto: CreatePaymentDto, role: string): Promise<PaymentType> {
     const payment = await this.paymentsRepo.findOne({ where: { id } });
     if (!payment) throw new NotFoundException('Payment not found');
     payment.studentId = dto.studentId;
@@ -50,7 +50,7 @@ export class PaymentsService {
     return { success: true };
   }
 
-  async listForRole(options: { role: string; studentId?: number; parentId?: number }): Promise<Payment[]> {
+  async listForRole(options: { role: string; studentId?: number; parentId?: number }): Promise<PaymentType[]> {
     const { role, studentId, parentId } = options;
 
     if (role === 'PARENT') {

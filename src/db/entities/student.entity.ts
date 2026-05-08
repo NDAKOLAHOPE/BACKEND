@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { StudentParent } from './student-parent.entity.js';
 import { Grade } from './grade.entity.js';
-import { Payment } from './payment.entity.js';
+import { Payment, PaymentType } from './payment.entity.js';
 import { Progress } from './progress.entity.js';
 import { ParentMessage } from './parent-message.entity.js';
 
@@ -42,7 +42,7 @@ export class Student {
   grades!: Grade[];
 
   @OneToMany(() => Payment, (p) => p.student)
-  payments!: Payment[];
+  payments!: PaymentType[];
 
   @OneToMany(() => Progress, (pr) => pr.student)
   progress!: Progress[];

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Student } from '../db/entities/student.entity.js';
 import { User } from '../db/entities/user.entity.js';
 import { Grade } from '../db/entities/grade.entity.js';
-import { Payment } from '../db/entities/payment.entity.js';
+import { Payment, PaymentType } from '../db/entities/payment.entity.js';
 import { ParentMessage } from '../db/entities/parent-message.entity.js';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class DashboardService {
     @InjectRepository(Student) private readonly studentsRepo: Repository<Student>,
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(Grade) private readonly gradesRepo: Repository<Grade>,
-    @InjectRepository(Payment) private readonly paymentsRepo: Repository<Payment>,
+    @InjectRepository(Payment) private readonly paymentsRepo: Repository<PaymentType>,
     @InjectRepository(ParentMessage)
     private readonly messagesRepo: Repository<ParentMessage>,
   ) {}

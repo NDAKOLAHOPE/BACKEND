@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StudentParent } from '../db/entities/student-parent.entity.js';
-import { Payment } from '../db/entities/payment.entity.js';
+import { Payment, PaymentType } from '../db/entities/payment.entity.js';
 import { ParentMessage } from '../db/entities/parent-message.entity.js';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(StudentParent)
     private readonly studentParentsRepo: Repository<StudentParent>,
-    @InjectRepository(Payment) private readonly paymentsRepo: Repository<Payment>,
+    @InjectRepository(Payment) private readonly paymentsRepo: Repository<PaymentType>,
     @InjectRepository(ParentMessage)
     private readonly messagesRepo: Repository<ParentMessage>,
   ) {}
