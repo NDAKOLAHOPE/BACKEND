@@ -27,17 +27,50 @@ export class StudentsService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       dob: dto.dob ? new Date(dto.dob) : null,
+      gender: dto.gender || null,
+      photoUrl: dto.photoUrl || null,
+      email: dto.email || null,
+      phone: dto.phone || null,
+      address: dto.address || null,
+      city: dto.city || null,
+      postalCode: dto.postalCode || null,
+      country: dto.country || null,
+      nationality: dto.nationality || null,
+      emergencyContactName: dto.emergencyContactName || null,
+      emergencyContactPhone: dto.emergencyContactPhone || null,
+      medicalInfo: dto.medicalInfo || null,
+      studentIdNumber: dto.studentIdNumber || null,
       className: dto.className ?? null,
+      status: dto.status || 'ACTIVE',
     });
     return this.studentsRepo.save(student);
   }
 
   async list(): Promise<Student[]> {
-    return this.studentsRepo.find({ order: { id: 'DESC' } });
+    return this.studentsRepo.find({
+      order: { id: 'DESC' },
+      relations: ['studentParents', 'studentParents.parent', 'reportCards'],
+    });
   }
 
   async getById(id: number): Promise<Student> {
-    const student = await this.studentsRepo.findOne({ where: { id } });
+    const student = await this.studentsRepo.findOne({
+      where: { id },
+      relations: [
+        'studentParents',
+        'studentParents.parent',
+        'grades',
+        'payments',
+        'progress',
+        'messages',
+        'enrollments',
+        'enrollments.academicYear',
+        'enrollments.classGroup',
+        'examScores',
+        'examScores.exam',
+        'reportCards',
+      ],
+    });
     if (!student) throw new NotFoundException('Student not found');
     return student;
   }
@@ -47,7 +80,24 @@ export class StudentsService {
     if (dto.firstName !== undefined) student.firstName = dto.firstName;
     if (dto.lastName !== undefined) student.lastName = dto.lastName;
     if (dto.dob !== undefined) student.dob = dto.dob ? new Date(dto.dob) : null;
-    if (dto.className !== undefined) student.className = dto.className ?? null;
+    if (dto.gender !== undefined) student.gender = dto.gender;
+    if (dto.photoUrl !== undefined) student.photoUrl = dto.photoUrl;
+    if (dto.email !== undefined) student.email = dto.email;
+    if (dto.phone !== undefined) student.phone = dto.phone;
+    if (dto.address !== undefined) student.address = dto.address;
+    if (dto.city !== undefined) student.city = dto.city;
+    if (dto.postalCode !== undefined) student.postalCode = dto.postalCode;
+    if (dto.country !== undefined) student.country = dto.country;
+    if (dto.nationality !== undefined) student.nationality = dto.nationality;
+    if (dto.emergencyContactName !== undefined)
+      student.emergencyContactName = dto.emergencyContactName;
+    if (dto.emergencyContactPhone !== undefined)
+      student.emergencyContactPhone = dto.emergencyContactPhone;
+    if (dto.medicalInfo !== undefined) student.medicalInfo = dto.medicalInfo;
+    if (dto.studentIdNumber !== undefined)
+      student.studentIdNumber = dto.studentIdNumber;
+    if (dto.className !== undefined) student.className = dto.className;
+    if (dto.status !== undefined) student.status = dto.status;
     return this.studentsRepo.save(student);
   }
 
@@ -67,10 +117,22 @@ export class StudentsService {
       if (!student) throw new NotFoundException(`Student #${studentId} not found`);
       if (!parentUser) throw new NotFoundException('Parent user not found');
 
+      const validParentRoles = ['PARENT', 'MERE', 'mere', 'parent'];
+      if (!validParentRoles.includes(parentUser.role)) {
+        throw new ForbiddenException('User is not a parent (must have PARENT, MERE role)');
+      }
+
       const existing = await this.studentParentsRepo.findOne({
         where: { studentId, parentId },
       });
       if (existing) continue;
+
+      const existingParent = await this.studentParentsRepo.findOne({
+        where: { studentId },
+      });
+      if (existingParent) {
+        throw new ForbiddenException(`Student #${studentId} already has a parent assigned`);
+      }
 
       const link = this.studentParentsRepo.create({ studentId, parentId });
       await this.studentParentsRepo.save(link);
@@ -105,6 +167,13 @@ export class StudentsService {
     });
     if (existing) return;
 
+    const existingParent = await this.studentParentsRepo.findOne({
+      where: { studentId },
+    });
+    if (existingParent) {
+      throw new ForbiddenException('This student already has a parent assigned');
+    }
+
     const link = this.studentParentsRepo.create({
       studentId,
       parentId: dto.parentId,
@@ -115,7 +184,16 @@ export class StudentsService {
   async myStudents(parentId: number): Promise<Student[]> {
     const links = await this.studentParentsRepo.find({
       where: { parentId },
-      relations: ['student'],
+      relations: [
+        'student',
+        'student.grades',
+        'student.examScores',
+        'student.examScores.exam',
+        'student.reportCards',
+        'student.enrollments',
+        'student.enrollments.academicYear',
+        'student.enrollments.classGroup',
+      ],
       order: { student: { id: 'DESC' } as any },
     });
     return links.map((l) => l.student);

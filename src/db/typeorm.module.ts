@@ -12,6 +12,13 @@ import { Grade } from './entities/grade.entity.js';
 import { Payment } from './entities/payment.entity.js';
 import { Progress } from './entities/progress.entity.js';
 import { ParentMessage } from './entities/parent-message.entity.js';
+import { AcademicYear } from './entities/academic-year.entity.js';
+import { ClassGroup } from './entities/class-group.entity.js';
+import { Enrollment } from './entities/enrollment.entity.js';
+import { Attendance } from './entities/attendance.entity.js';
+import { Exam } from './entities/exam.entity.js';
+import { ExamScore } from './entities/exam-score.entity.js';
+import { ReportCard } from './entities/report-card.entity.js';
 
 async function verifyReachable(address: string, port: number): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -127,6 +134,13 @@ function sqliteFallbackPath(): string {
             Payment,
             Progress,
             ParentMessage,
+            AcademicYear,
+            ClassGroup,
+            Enrollment,
+            Attendance,
+            Exam,
+            ExamScore,
+            ReportCard,
           ],
         };
 
@@ -170,6 +184,13 @@ function sqliteFallbackPath(): string {
                 Payment,
                 Progress,
                 ParentMessage,
+                AcademicYear,
+                ClassGroup,
+                Enrollment,
+                Attendance,
+                Exam,
+                ExamScore,
+                ReportCard,
               ],
             };
           }
